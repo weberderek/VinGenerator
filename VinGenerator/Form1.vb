@@ -1,5 +1,8 @@
 ﻿Imports Microsoft.Office.Interop
 Public Class Form1
+    'directory that contains the Work Order Template Folder 
+    'Private TemplateFilePath = "C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\"
+    Private TemplateFilePath = "G:\Shared drives\Public\Work_Order_Generator\"
     Private NumFiles
     Private filesCreated = 0
 
@@ -22,7 +25,7 @@ Public Class Form1
         Dim xlsworkbook As Excel.Workbook
         Dim xlsworksheet As Excel.Worksheet
         xlsapp = New Excel.Application
-        xlsworkbook = xlsapp.Workbooks.Open("c:\users\derek.weber\source\repos\workorder\workorder\work order templates\" + fileName)
+        xlsworkbook = xlsapp.Workbooks.Open(TemplateFilePath + "\work order templates\" + fileName)
         xlsworksheet = xlsworkbook.Worksheets(2)
         Dim numRows = xlsworksheet.UsedRange.Rows.Count - 1
         Dim currentRow = 2
@@ -33,7 +36,7 @@ Public Class Form1
         Dim SOPROD As String
         Dim temp As String
         Dim DirectoryPathFolder As String
-        DirectoryPathFolder = "C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\Subassemblies\"
+        DirectoryPathFolder = TemplateFilePath + "WorkOrders\Subassemblies\"
         Dim DirectoryPathFile As String
         For i As Integer = 0 To vins.Count() - 1
             xlsworksheet = xlsworkbook.Worksheets(1)
@@ -69,6 +72,7 @@ Public Class Form1
             xlscell = xlsworksheet.Range("g" + row)
             xlscell.Value = temp
 
+            'creates all work instructions for vin
             For j As Integer = 2 To numRows + 1
                 xlsworksheet = xlsworkbook.Worksheets(2)
                 xlscell = xlsworksheet.Range("a" + currentRow.ToString())
@@ -123,6 +127,8 @@ Public Class Form1
         Dim WOPROD As String
         Dim SOPROD As String
         Dim DirectoryPathFolder As String
+        DirectoryPathFolder = TemplateFilePath + "WorkOrders"
+        My.Computer.FileSystem.CreateDirectory(DirectoryPathFolder)
         For i As Integer = 0 To vins.Count() - 1
             Dim ch15 As Char = vins.ElementAt(i)(14)
             Dim ch16 As Char = vins.ElementAt(i)(15)
@@ -140,7 +146,7 @@ Public Class Form1
             xlsApp = New Excel.Application
 
             ' Open test Excel spreadsheet
-            xlsWorkBook = xlsApp.Workbooks.Open("C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\\WORK ORDER TEMPLATES\MAIN BUILD-WORK ORDER.xlsx")
+            xlsWorkBook = xlsApp.Workbooks.Open(TemplateFilePath + "\WORK ORDER TEMPLATES\MAIN BUILD-WORK ORDER.xlsx")
             ' Open worksheet 
             xlsWorkSheet = xlsWorkBook.Worksheets(1)
             '
@@ -176,16 +182,16 @@ Public Class Form1
 
             'CASES AND JOIN DB
             Dim DirectoryPathFile As String
-            DirectoryPathFolder = "C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\"
+            DirectoryPathFolder = TemplateFilePath + "WorkOrders\"
             My.Computer.FileSystem.CreateDirectory(DirectoryPathFolder)
             'Last Save and Close
-            DirectoryPathFile = "C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\" + vins.ElementAt(i)
+            DirectoryPathFile = TemplateFilePath + "WorkOrders\" + vins.ElementAt(i)
             xlsWorkBook.SaveAs(DirectoryPathFile)
             xlsWorkBook.Close()
             filesCreated = filesCreated + 1
             BackgroundWorker1.ReportProgress((filesCreated * 100) / NumFiles)
         Next
-        DirectoryPathFolder = "C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\" + "\Subassemblies\"
+        DirectoryPathFolder = TemplateFilePath + "WorkOrders\Subassemblies\"
         My.Computer.FileSystem.CreateDirectory(DirectoryPathFolder)
 
 
