@@ -1,23 +1,35 @@
 ﻿Imports Microsoft.Office.Interop
 Public Class Form1
     'directory that contains the Work Order Template Folder 
-    'Private TemplateFilePath = "C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\"
     Private TemplateFilePath = "G:\Shared drives\Public\Work_Order_Generator\"
     Private NumFiles
     Private filesCreated = 0
+    Private strFileName As String
 
     Private Sub BackgroundWorker1_DoWork(ByVal sender As System.Object, ByVal e As System.ComponentModel.DoWorkEventArgs) Handles BackgroundWorker1.DoWork
-        Main(TextBox1.Text)
+        Main(strFileName)
     End Sub
 
     Private Sub BackgroundWorker1_RunWorkerCompleted(ByVal sender As Object, ByVal e As System.ComponentModel.RunWorkerCompletedEventArgs) Handles BackgroundWorker1.RunWorkerCompleted
         MsgBox("Done")
-        Button1.Enabled = True
         Application.Exit()
     End Sub
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        Button1.Enabled = False
-        BackgroundWorker1.RunWorkerAsync()
+
+    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+        Dim fd As OpenFileDialog = New OpenFileDialog()
+
+        fd.Title = "Open File Dialog"
+        fd.InitialDirectory = "C:\"
+        fd.Filter = "excel files (*.xlsx*)|*.xlsx*"
+        fd.FilterIndex = 2
+        fd.RestoreDirectory = True
+
+        If fd.ShowDialog() = DialogResult.OK Then
+            strFileName = fd.FileName
+            BackgroundWorker1.RunWorkerAsync()
+        End If
+
+        'MsgBox(strFileName)
     End Sub
 
     Private Sub SubAssembly(prefix As String, vins As List(Of String), dates As List(Of String), fileName As String)
@@ -216,7 +228,7 @@ Public Class Form1
             xlsApp = New Excel.Application
             'xlsWorkBook = xlsApp.Workbooks.Open("C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\input.xlsx")
             xlsWorkBook = xlsApp.Workbooks.Open(path)
-            xlsWorkSheet = xlsWorkBook.Worksheets("sheet1")
+            xlsWorkSheet = xlsWorkBook.Worksheets(1)
 
             Dim Range = xlsWorkSheet.UsedRange
             NumFiles = Range.Rows.Count * 22
@@ -224,9 +236,11 @@ Public Class Form1
             For rcnt = 1 To Range.Rows.Count
                 Dim obj = CType(Range.Cells(rcnt, 1), Excel.Range)
                 Dim obj1 = CType(Range.Cells(rcnt, 2), Excel.Range)
-                If (VinIsValid(obj.Value) And IsDate(obj1.Value)) Then
-                    vins.Add(obj.Value)
-                    dates.Add(obj1.Value)
+                If (obj.Value IsNot Nothing And obj1.Value IsNot Nothing) Then
+                    If (VinIsValid(obj.Value) And IsDate(obj1.Value)) Then
+                        vins.Add(obj.Value)
+                        dates.Add(CDate(obj1.Value).ToString("yyyy-MM-dd"))
+                    End If
                 End If
             Next
 
@@ -273,7 +287,7 @@ Public Class Form1
     End Sub
 
 
-    Private Sub Label1_Click(sender As Object, e As EventArgs) Handles Label1.Click
+    Private Sub Label1_Click(sender As Object, e As EventArgs)
 
     End Sub
 
