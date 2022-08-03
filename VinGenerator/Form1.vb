@@ -2,7 +2,9 @@
 Public Class Form1
     'directory that contains the Work Order Template Folder 
     Private TemplateFilePath = "G:\Shared drives\Public\Work_Order_Generator\"
-    Private NumFiles
+    'Private TemplateFilePath = "C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\"
+    Private logFile = TemplateFilePath + "WorkOrders\log.txt"
+    Private NumFiles = 0
     Private filesCreated = 0
     Private strFileName As String
 
@@ -28,8 +30,6 @@ Public Class Form1
             strFileName = fd.FileName
             BackgroundWorker1.RunWorkerAsync()
         End If
-
-        'MsgBox(strFileName)
     End Sub
 
     Private Sub SubAssembly(prefix As String, vins As List(Of String), dates As List(Of String), fileName As String)
@@ -225,13 +225,13 @@ Public Class Form1
         Dim dates As New List(Of String)
 
         Try
+            Dim DirectoryPathFolder = TemplateFilePath + "WorkOrders"
+            My.Computer.FileSystem.CreateDirectory(DirectoryPathFolder)
             xlsApp = New Excel.Application
-            'xlsWorkBook = xlsApp.Workbooks.Open("C:\Users\derek.weber\source\repos\WorkOrder\WorkOrder\input.xlsx")
             xlsWorkBook = xlsApp.Workbooks.Open(path)
             xlsWorkSheet = xlsWorkBook.Worksheets(1)
 
             Dim Range = xlsWorkSheet.UsedRange
-            NumFiles = Range.Rows.Count * 22
 
             For rcnt = 1 To Range.Rows.Count
                 Dim obj = CType(Range.Cells(rcnt, 1), Excel.Range)
@@ -240,7 +240,11 @@ Public Class Form1
                     If (VinIsValid(obj.Value) And IsDate(obj1.Value)) Then
                         vins.Add(obj.Value)
                         dates.Add(CDate(obj1.Value).ToString("yyyy-MM-dd"))
+                        NumFiles = NumFiles + 21
+                    Else
+                        IO.File.AppendAllText(logFile, "vin or date is invalid for vin: " + obj.Value + Environment.NewLine)
                     End If
+
                 End If
             Next
 
@@ -263,7 +267,7 @@ Public Class Form1
             SubAssembly("PREX-", vins, dates, "BATTERY PACK - WORK ORDER.xlsx")
             SubAssembly("BUMP-", vins, dates, "BUMPER - WORK ORDER.xlsx")
             SubAssembly("CABP-", vins, dates, "CAB PREP - WORK ORDER.xlsx")
-            SubAssembly("COMP-", vins, dates, "COMPRESSOR-HEATER - WORK ORDER.xlsx")
+            'SubAssembly("COMP-", vins, dates, "COMPRESSOR-HEATER - WORK ORDER.xlsx")
             SubAssembly("DCDC-", vins, dates, "DCDC - WORK ORDER.xlsx")
             SubAssembly("EAXLE-", vins, dates, "E-AXLE - WORK ORDER.xlsx")
             SubAssembly("EXP-", vins, dates, "EXPANSION TANK - WORK ORDER.xlsx")
