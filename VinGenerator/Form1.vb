@@ -88,7 +88,7 @@ Public Class Form1
             For j As Integer = 2 To numRows + 1
                 xlsworksheet = xlsworkbook.Worksheets(2)
                 xlscell = xlsworksheet.Range("a" + currentRow.ToString())
-                xlscell.Value = prefix + vins.ElementAt(i)
+                xlscell.Value = prefix + WOPROD
                 xlscell = xlsworksheet.Range("b" + j.ToString())
                 temp = xlscell.Value
                 xlscell = xlsworksheet.Range("b" + currentRow.ToString())
@@ -190,7 +190,7 @@ Public Class Form1
             newrange1 = "A2:" + lastcell
             'MessageBox.Show(newrange1)
             xlsCell = xlsWorkSheet.Range(newrange1)
-            xlsCell.Value = vins.ElementAt(i)
+            xlsCell.Value = WOPROD
 
             'CASES AND JOIN DB
             Dim DirectoryPathFile As String
@@ -261,10 +261,10 @@ Public Class Form1
         End If
         Try
             VinWorkOrder(vins, dates)
-            SubAssembly("5THWHEEL-", vins, dates, "5THWHEEL - WORK ORDER.xlsx")
+            SubAssembly("5THWH-", vins, dates, "5THWHEEL - WORK ORDER.xlsx")
             SubAssembly("ACC-", vins, dates, "AC COMPRESSOR - WORK ORDER.xlsx")
             SubAssembly("AIRT-", vins, dates, "AIR TANK - WORK ORDER.xlsx")
-            SubAssembly("PREX-", vins, dates, "BATTERY PACK - WORK ORDER.xlsx")
+            SubAssembly("BATP-", vins, dates, "BATTERY PACK - WORK ORDER.xlsx")
             SubAssembly("BUMP-", vins, dates, "BUMPER - WORK ORDER.xlsx")
             SubAssembly("CABP-", vins, dates, "CAB PREP - WORK ORDER.xlsx")
             'SubAssembly("COMP-", vins, dates, "COMPRESSOR-HEATER - WORK ORDER.xlsx")
